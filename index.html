@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resident Communication Generator — Moinian Group</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#2d5a3d;--green-mid:#4a7c5f;--green-light:#e8f0eb;
+  --gold:#c4892a;--gold-light:#fdf4e7;
+  --bg:#f7f5f1;--surface:#ffffff;--surface2:#f0ede8;
+  --border:#e2ddd6;--text:#1a1714;--text2:#6b6560;--text3:#9b9590;
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 4px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.04)
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.hdr{background:var(--green);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hdr-left{display:flex;align-items:center;gap:14px}
+.hdr-icon{width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.hdr-icon svg{width:18px;height:18px;fill:white}
+.hdr-title{font-family:'DM Serif Display',serif;font-size:17px;color:white;font-weight:400}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,0.6);margin-top:1px}
+.hdr-badge{background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 12px;font-size:11px;color:white;font-weight:500}
+.layout{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - 62px)}
+.left{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.search-wrap{padding:12px 14px;border-bottom:1px solid var(--border);position:relative}
+.search-icon{position:absolute;left:26px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text3);pointer-events:none}
+.search-input{width:100%;padding:8px 10px 8px 34px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.search-input:focus{border-color:var(--green)}
+.cats-wrap{padding:8px 14px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:4px}
+.cat-pill{padding:3px 9px;border-radius:99px;border:1px solid var(--border);font-size:11px;cursor:pointer;background:transparent;color:var(--text2);font-family:'DM Sans',sans-serif;transition:all .12s;white-space:nowrap}
+.cat-pill:hover{border-color:var(--green);color:var(--green)}
+.cat-pill.active{background:var(--green);border-color:var(--green);color:white;font-weight:500}
+.tmpl-count{padding:6px 14px 2px;font-size:10px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase}
+.tmpl-list{flex:1;overflow-y:auto;padding:4px 6px 16px}
+.tmpl-item{padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:2px;transition:background .1s;border:1px solid transparent}
+.tmpl-item:hover{background:var(--bg)}
+.tmpl-item.active{background:var(--green-light);border-color:#b8d4c0}
+.tmpl-item-cat{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px}
+.tmpl-item-name{font-size:12px;color:var(--text);font-weight:500;line-height:1.3}
+.tmpl-item.active .tmpl-item-name{color:var(--green)}
+.tmpl-empty{padding:20px 14px;color:var(--text3);font-size:13px;text-align:center}
+.right{display:flex;flex-direction:column;overflow:hidden}
+.right-top{flex:1;overflow-y:auto;padding:22px 26px}
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text3)}
+.placeholder-icon{width:52px;height:52px;background:var(--surface2);border-radius:14px;display:flex;align-items:center;justify-content:center}
+.placeholder-icon svg{width:26px;height:26px;color:var(--text3)}
+.placeholder h3{font-size:15px;color:var(--text2);font-weight:500}
+.placeholder p{font-size:13px;text-align:center;max-width:260px;line-height:1.6}
+.form-header{margin-bottom:18px}
+.form-cat-tag{display:inline-block;background:var(--green-light);color:var(--green);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:500;margin-bottom:8px}
+.form-header h2{font-family:'DM Serif Display',serif;font-size:19px;font-weight:400;margin-bottom:3px}
+.form-header p{font-size:12px;color:var(--text2)}
+.fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:3px}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.field input,.field textarea{padding:7px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;width:100%}
+.field input:focus,.field textarea:focus{border-color:var(--green)}
+.field textarea{resize:vertical;min-height:70px;line-height:1.5}
+.form-actions{display:flex;gap:8px;margin-bottom:22px}
+.btn{padding:8px 18px;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .12s}
+.btn-primary{background:var(--green);color:white;border-color:var(--green)}
+.btn-primary:hover{background:var(--green-mid)}
+.btn-ghost{background:transparent;color:var(--text2)}
+.btn-ghost:hover{background:var(--surface2)}
+.output{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.output-header{background:var(--green);padding:11px 16px;display:flex;align-items:center;justify-content:space-between}
+.output-header span{font-size:11px;color:rgba(255,255,255,0.8);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.copy-row{display:flex;gap:6px}
+.btn-copy{padding:4px 11px;border-radius:5px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.12);color:white;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .12s}
+.btn-copy:hover{background:rgba(255,255,255,0.22)}
+.btn-copy.copied{background:rgba(255,255,255,0.28)}
+.output-subject-wrap{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg)}
+.output-subject-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:5px}
+.subject-edit{width:100%;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s}
+.subject-edit:focus{border-color:var(--green)}
+.output-body-wrap{padding:16px}
+.output-body-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:5px}
+.body-edit{width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;line-height:1.8;padding:11px;resize:vertical;min-height:300px}
+.body-edit:focus{border-color:var(--green)}
+.edit-hint{font-size:11px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:5px}
+.edit-hint svg{width:11px;height:11px;flex-shrink:0}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:white;padding:9px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:700px){.layout{grid-template-columns:1fr;height:auto}.left{height:auto;max-height:300px}.hdr-badge{display:none}.fields-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+    <div><div class="hdr-title">Resident Communication Generator</div><div class="hdr-sub">Moinian Group · Property Management</div></div>
+  </div>
+  <div class="hdr-badge">49 Templates</div>
+</div>
+<div class="layout">
+  <div class="left">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search: elevator, noise, holiday, HVAC…" oninput="filter()">
+    </div>
+    <div class="cats-wrap" id="catsWrap"></div>
+    <div class="tmpl-count" id="tmplCount"></div>
+    <div class="tmpl-list" id="tmplList"></div>
+  </div>
+  <div class="right">
+    <div class="right-top" id="rightPanel">
+      <div class="placeholder" id="placeholder">
+        <div class="placeholder-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+        <h3>Select a template</h3>
+        <p>Search by keyword or browse by category on the left to get started.</p>
+      </div>
+      <div id="formArea" style="display:none">
+        <div class="form-header">
+          <div class="form-cat-tag" id="formCat"></div>
+          <h2 id="formTitle"></h2>
+          <p>Fill in the details below — placeholders show examples. Leave blank to use the example shown.</p>
+        </div>
+        <div class="fields-grid" id="fieldsGrid"></div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="generate()">Generate email</button>
+          <button class="btn btn-ghost" onclick="clearForm()">Clear fields</button>
+        </div>
+        <div id="outputWrap" style="display:none">
+          <div class="output">
+            <div class="output-header">
+              <span>Edit &amp; Copy</span>
+              <div class="copy-row">
+                <button class="btn-copy" id="copySubBtn" onclick="copySubject()">Copy subject</button>
+                <button class="btn-copy" id="copyAllBtn" onclick="copyAll()">Copy full email</button>
+              </div>
+            </div>
+            <div class="output-subject-wrap">
+              <div class="output-subject-label">Subject line — click to edit</div>
+              <input class="subject-edit" id="outSubject" type="text">
+            </div>
+            <div class="output-body-wrap">
+              <div class="output-body-label">Email body — click anywhere to edit</div>
+              <textarea class="body-edit" id="outBody"></textarea>
+              <div class="edit-hint">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Both fields are fully editable — type directly to adjust before copying.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const T=[
+// ── ELEVATORS ────────────────────────────────────────────────────────────────
+{id:1,cat:"Elevators",name:"Elevator Out of Service",kw:["elevator","down","out of service","broken"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"elev",l:"Elevator # or description",ph:"Elevator #2"},{id:"op",l:"# of elevators still operational",ph:"3"},{id:"email",l:"Management email",ph:"admin@columbuspropmgmt.com"},{id:"phone",l:"Concierge phone",ph:"(212) 825-1711"}],
+sub:(f)=>`${f.prop} — Elevator Out of Service`,
+body:(f)=>`Dear Residents,\n\nDue to unforeseen circumstances, elevator ${f.elev} is currently out of service. We are working diligently with our elevator technicians to restore service as soon as possible. ${f.op} elevators remain fully operational.\n\nWe apologize for any inconvenience and will notify you as soon as service is restored.\n\nShould you need further assistance or have any questions, please reach out to us at ${f.email} or contact Concierge at ${f.phone}.\n\nThank you,\n${f.prop} Management`},
+
+{id:2,cat:"Elevators",name:"Elevator Out — Amenity Offered",kw:["elevator","down","amenity","breakfast","coffee","apology"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"op",l:"# of elevators still operational",ph:"2"},{id:"amenity",l:"Amenity being offered",ph:"hot coffee and artisanal baked goods"},{id:"time",l:"Amenity start time",ph:"8am"},{id:"contact",l:"On-site contact name & title",ph:"Ioanna Zacharopoulou, Head of Resident Experience"},{id:"phone",l:"Concierge phone",ph:"(212) 765-6272"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Elevator Update`,
+body:(f)=>`Dear Residents,\n\nWe would like to provide you with an update regarding the elevators at ${f.prop}.\n\nCurrently ${f.op} elevator(s) are fully operational and our teams, along with the elevator contractors, are working diligently to repair the remaining unit(s).\n\nWe sincerely apologize for the inconvenience. As a small token of our appreciation, we will be offering ${f.amenity} in the lobby each morning starting at ${f.time}. ${f.contact} will also be available on-site to address any thoughts or concerns.\n\nFor immediate assistance, please contact Concierge at ${f.phone} or you may reach our management team at ${f.email}.\n\nIn the event of an emergency please call 911.\n\nSincerely,\n${f.prop} Management`},
+
+{id:3,cat:"Elevators",name:"Elevator Partially Restored",kw:["elevator","restored","partial","service update"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"op",l:"# of elevators now operational",ph:"2"},{id:"email",l:"Management email",ph:"100johnadmin@columbuspropmgmt.com"},{id:"phone",l:"Concierge phone",ph:"212-217-9622"}],
+sub:(f)=>`${f.prop} — Elevator Service Update`,
+body:(f)=>`Dear Residents,\n\nWe are pleased to inform you that ${f.op} elevator(s) are now fully operational and available for use while the remaining unit(s) continue to be serviced. We continue to work with the elevator technicians to fully restore service and we will notify you immediately with all updates and when service is fully restored.\n\nWe apologize for any inconvenience caused. Should you need further assistance, please email us at ${f.email} or contact Concierge at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:4,cat:"Elevators",name:"Elevator Fully Restored",kw:["elevator","restored","fully operational","all elevators"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"email",l:"Management email",ph:"100johnadmin@columbuspropmgmt.com"},{id:"phone",l:"Concierge phone",ph:"212-217-9622"}],
+sub:(f)=>`${f.prop} — Elevator Service Restored`,
+body:(f)=>`Dear Residents,\n\nWe are pleased to inform you that all elevators are now fully operational and ready for use.\n\nWe sincerely apologize for the inconvenience during these necessary repairs. Should you need further assistance, please email us at ${f.email} or contact Concierge at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:5,cat:"Elevators",name:"Elevator Out — Repair Timeline Given",kw:["elevator","timeline","repair date","expected","delay"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"eta",l:"Expected repair completion",ph:"end of day tomorrow, Wednesday April 30th"},{id:"email",l:"Management email",ph:"100johnadmin@columbuspropmgmt.com"},{id:"phone",l:"Concierge phone",ph:"212-217-9622"}],
+sub:(f)=>`${f.prop} — Elevator Service Update`,
+body:(f)=>`Dear Residents,\n\nWe would like to provide you with an update regarding the elevator repair timeline. Our technicians are currently working on the issue and anticipate service to be fully restored by ${f.eta}.\n\nWe will continue to keep you informed and will share a confirmation as soon as service is fully restored.\n\nThank you for your patience.\n\nSincerely,\n${f.prop} Management`},
+
+// ── WATER & HEAT ─────────────────────────────────────────────────────────────
+{id:6,cat:"Water & Heat",name:"Scheduled Water or Steam Shutoff",kw:["water","steam","shutoff","scheduled","hot water","interruption","con edison"],
+fields:[{id:"prop",l:"Property name",ph:"PLG"},{id:"svc",l:"Service being shut off",ph:"hot water and steam"},{id:"reason",l:"Reason",ph:"Con Edison utility work"},{id:"date",l:"Date of shutoff",ph:"Friday, May 2nd"},{id:"start",l:"Start time",ph:"9am"},{id:"end",l:"End time",ph:"1pm"},{id:"phone",l:"Concierge phone",ph:"(212) 825-1711"}],
+sub:(f)=>`${f.prop} — ${f.svc} Interruption — ${f.date}`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that ${f.svc} service will be temporarily interrupted on ${f.date} between the hours of ${f.start} and ${f.end} due to ${f.reason}.\n\nKindly ensure that all faucets are turned off to prevent any leaks or other incidents. When service is restored, you may initially notice temporary discoloration. Please allow the water to run for a few minutes, and the discoloration will resolve itself.\n\nWe appreciate your cooperation and apologize for any inconvenience. For immediate assistance, please contact Concierge at ${f.phone}.\n\nThank you,\n${f.prop} Management`},
+
+{id:7,cat:"Water & Heat",name:"Emergency Water Interruption",kw:["water","emergency","unplanned","unexpected","no water"],
+fields:[{id:"prop",l:"Property name",ph:"90W"},{id:"phone",l:"Concierge phone",ph:"646-678-5128"},{id:"email",l:"Management email",ph:"90wadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Water Service Interruption`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that due to unanticipated repairs, we are currently experiencing a temporary interruption in water service. We are working as quickly as possible to restore service.\n\nKindly ensure that all faucets are turned off to prevent any leaks or other incidents. When service is restored, you may initially notice temporary discoloration. Please allow the water to run for a few minutes, and the discoloration will resolve itself.\n\nWe apologize for any inconvenience this situation may have caused and greatly appreciate your patience and cooperation. For immediate assistance, please contact Concierge at ${f.phone} or you may reach our management team at ${f.email}.\n\nIn the event of an emergency please call 911.\n\nThank you,\n${f.prop} Management`},
+
+{id:8,cat:"Water & Heat",name:"Heat Outage",kw:["heat","heating","no heat","outage","hvac"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"eta",l:"Estimated restoration time",ph:"within the next two hours"},{id:"phone",l:"Concierge phone",ph:"(212) 217-9622"},{id:"email",l:"Management email",ph:"100johnadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Temporary Heat Outage`,
+body:(f)=>`Dear Residents,\n\nDue to unforeseen circumstances, heat service is currently unavailable. Our teams and technicians are working diligently to restore service, with an estimated completion of ${f.eta}.\n\nWe will notify you immediately of any updates and when service is fully restored.\n\nFor immediate assistance, please contact Concierge at ${f.phone} or you may reach our management team at ${f.email}.\n\nIn the event of an emergency please call 911.\n\nSincerely,\n${f.prop} Management`},
+
+{id:9,cat:"Water & Heat",name:"Water / Heat Service Restored",kw:["water restored","heat restored","service restored","back on"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"svc",l:"Service that was restored",ph:"hot water"},{id:"phone",l:"Concierge phone",ph:"(212) 217-9622"},{id:"email",l:"Management email",ph:"100johnadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — ${f.svc} Service Restored`,
+body:(f)=>`Dear Residents,\n\nWe are pleased to inform you that ${f.svc} has been fully restored throughout the building.\n\nShould you encounter any ${f.svc}-related issues within your apartment, please reply to this email with your availability so that our maintenance team can schedule access to inspect the matter.\n\nWe apologize for any inconvenience this situation may have caused and greatly appreciate your patience and cooperation. For immediate assistance, please contact Concierge at ${f.phone} or you may reach our management team at ${f.email}.\n\nIn the event of an emergency please call 911.\n\nSincerely,\n${f.prop} Management`},
+
+// ── STAFF UPDATES ─────────────────────────────────────────────────────────────
+{id:10,cat:"Staff Updates",name:"Staff Member Departure",kw:["staff","employee","leaving","departure","transition","farewell"],
+fields:[{id:"prop",l:"Property name",ph:"Chai"},{id:"name",l:"Departing employee first name",ph:"Lance"},{id:"date",l:"Effective / last day",ph:"May 9th"},{id:"interim",l:"Interim contact name",ph:"Eric Ogando"},{id:"reach",l:"How to reach interim contact",ph:"through the Concierge"},{id:"email",l:"Management email",ph:"chaiadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Team Update`,
+body:(f)=>`Dear Residents,\n\nPlease join us in thanking ${f.name} as they pursue a new opportunity, effective ${f.date}.\n\nWe are grateful for their contributions and positive impact at ${f.prop} and wish them the very best in their next chapter.\n\nDuring this transition, your primary point of contact will be ${f.interim}, who can be reached ${f.reach}. We are actively working to secure a replacement and will keep you updated.\n\nFor general inquiries, please continue to reach out to ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:11,cat:"Staff Updates",name:"New Staff Member Announcement",kw:["staff","new hire","welcome","joining","new manager"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"name",l:"New employee full name",ph:"Ardian Qerimi"},{id:"role",l:"Role / title",ph:"Resident Manager"},{id:"date",l:"Start date",ph:"August 16th"},{id:"empEmail",l:"New employee email",ph:"ardian@columbuspropmgmt.com"},{id:"bio",l:"Brief background (1–2 sentences)",ph:"Ardian brings extensive experience in luxury residential property operations.",big:true}],
+sub:(f)=>`${f.prop} — Welcome ${f.name}`,
+body:(f)=>`Dear Residents,\n\nWe are excited to introduce the newest addition to the ${f.prop} team: ${f.name}, joining us as ${f.role}, effective ${f.date}.\n\n${f.bio}\n\n${f.name} can be reached at ${f.empEmail}. Please join us in extending a warm welcome!\n\nSincerely,\n${f.prop} Management`},
+
+{id:12,cat:"Staff Updates",name:"Staff Promotion or Transfer",kw:["staff","promotion","transfer","new role","congratulations"],
+fields:[{id:"prop",l:"Property name",ph:"Ocean"},{id:"dep",l:"Departing/promoted employee",ph:"Mario Fenko"},{id:"role",l:"Their role",ph:"Resident Manager"},{id:"reason",l:"Where/why they are going",ph:"promoted to oversee our newest property, Bezel, in Miami"},{id:"newName",l:"Incoming employee name",ph:"Gani Blakaj"},{id:"newDate",l:"Incoming start date",ph:"October 14th"},{id:"newBio",l:"Incoming employee background",ph:"Gani has been with The Moinian Group for over 10 years.",big:true}],
+sub:(f)=>`${f.prop} — Team Update`,
+body:(f)=>`Dear Residents,\n\nWe are excited to share an organizational update at ${f.prop}.\n\n${f.dep}, our ${f.role}, has been ${f.reason}. We thank them for their outstanding contributions and are confident they will continue to excel.\n\nEffective ${f.newDate}, ${f.newName} will be joining us as ${f.role}. ${f.newBio}\n\nPlease join us in congratulating ${f.dep} and welcoming ${f.newName}!\n\nSincerely,\n${f.prop} Management`},
+
+// ── CONSTRUCTION ──────────────────────────────────────────────────────────────
+{id:13,cat:"Construction",name:"Exterior / Facade Work — Noise Advisory",kw:["construction","facade","exterior","noise","scaffolding","work"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"work",l:"Type of work",ph:"mandatory Local Law 11 exterior work"},{id:"date",l:"Start date",ph:"Monday, May 5th"},{id:"hours",l:"Work hours",ph:"8am – 4pm"},{id:"phone",l:"Concierge phone",ph:"(212) 217-9622"},{id:"email",l:"Management email",ph:"100johnadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — ${f.work} Notice`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that mandatory ${f.work} exterior work at the building will begin on ${f.date}, taking place Monday through Friday between the hours of ${f.hours}.\n\nAt this time, we do not yet have a confirmed completion date; however, we will continue to keep you informed as more details become available.\n\nDuring this period, you may experience some construction-related noise within the above hours. Additionally, as work will be performed along the building's exterior, inspectors and workers may be visible outside apartment windows. For your comfort and privacy, you may wish to keep shades or blinds closed during active work hours.\n\nWe understand that this may be disruptive at times and truly appreciate your patience as we move forward with this important improvement project at ${f.prop}.\n\nFor immediate assistance, please contact Concierge at ${f.phone} or you may reach our management team at ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:14,cat:"Construction",name:"Neighboring Construction Advisory",kw:["construction","next door","neighboring","vibration","adjacent"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"desc",l:"Description / location of construction",ph:"a new building being constructed next door"},{id:"impact",l:"How it may impact residents",ph:"intermittent vibrations at various times of the day"},{id:"measures",l:"Safety measures in place",ph:"vibration monitors, city permits, and on-site engineers"},{id:"rmPhone",l:"Resident Manager phone",ph:"917-412-6569"},{id:"phone",l:"Concierge phone",ph:"212-217-9622"}],
+sub:(f)=>`${f.prop} — Neighboring Construction Update`,
+body:(f)=>`Dear Residents,\n\nWe would like to inform you about ${f.desc}.\n\nAs they continue their work, you may experience ${f.impact}. We are in close collaboration with the construction team to ensure the safety and comfort of all residents. Measures in place include ${f.measures}.\n\nWe will share updates as we receive them. Should you experience excessive disturbance, please contact our Resident Manager at ${f.rmPhone} or our 24/7 Concierge team at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:15,cat:"Construction",name:"Permission to Enter Unit",kw:["permission to enter","pte","access","terrace","unit entry"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"work",l:"Work being performed",ph:"facade removal and scaffold dismantling"},{id:"start",l:"Access start date",ph:"Monday, October 2nd"},{id:"end",l:"Access end date",ph:"Thursday, October 5th"},{id:"hours",l:"Access hours",ph:"8am to 4pm"},{id:"phone",l:"Concierge phone",ph:"212-217-9622"}],
+sub:(f)=>`${f.prop} — Permission to Enter: ${f.work}`,
+body:(f)=>`Dear Resident,\n\nWe hope you are well.\n\nBeginning ${f.start}, between the hours of ${f.hours}, we will be conducting ${f.work}. As part of this work, we may need intermittent access to your terrace through your residence from ${f.start} through ${f.end}. After this period, all work will be completed without the need for further unit entry.\n\nOur team will be respectful of your home and will work with care and discretion at all times. Concierge will always reach out in advance to coordinate any necessary access.\n\nIf you have any questions or would like to provide specific access instructions, please feel free to contact Concierge at ${f.phone}.\n\nThank you for your cooperation.\n\nSincerely,\n${f.prop} Management`},
+
+// ── LEASE RENEWALS ────────────────────────────────────────────────────────────
+{id:16,cat:"Lease Renewals",name:"Lease Renewal with Incentive Tiers",kw:["renewal","lease","renew","credit","incentive","expiring"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"exp",l:"Lease end date",ph:"November 30, 2025"},{id:"t1d",l:"Tier 1 deadline",ph:"10 days from today"},{id:"t1c",l:"Tier 1 credit",ph:"$300"},{id:"month",l:"Credit applies to month",ph:"December"},{id:"t2d",l:"Tier 2 deadline",ph:"20 days from today"},{id:"t2c",l:"Tier 2 credit",ph:"$200"},{id:"t3d",l:"Tier 3 / final deadline",ph:"30 days from today"},{id:"t3c",l:"Tier 3 credit",ph:"$100"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"},{id:"phone",l:"Management phone",ph:"212-433-3111"}],
+sub:(f)=>`${f.prop} — Your Lease Renewal — Expires ${f.exp}`,
+body:(f)=>`Dear Resident,\n\nPlease find attached the renewal for your lease expiring ${f.exp}.\n\nIt has been a pleasure having you at ${f.prop} and we look forward to many more years together.\n\nAs a token of our appreciation, we are pleased to offer the following incentives for early return:\n\n  • Return by ${f.t1d} → ${f.t1c} credit toward ${f.month} rent\n  • Return by ${f.t2d} → ${f.t2c} credit toward ${f.month} rent\n  • Return by ${f.t3d} → ${f.t3c} credit toward ${f.month} rent\n\nIf you have any questions, please contact Management at ${f.email} or ${f.phone}.\n\nThank you for making ${f.prop} your home.\n\nSincerely,\n${f.prop} Management`},
+
+{id:17,cat:"Lease Renewals",name:"Last Call to Renew — No Response",kw:["renewal","last call","no response","expiring","final"],
+fields:[{id:"prop",l:"Property name",ph:"Ocean"},{id:"exp",l:"Lease expiration date",ph:"October 31, 2025"},{id:"mktDate",l:"Date unit goes on market",ph:"October 10th"},{id:"email",l:"Management email",ph:"oceanadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Final Notice: Lease Renewal`,
+body:(f)=>`Dear Resident,\n\nWe hope you're doing well.\n\nWe wanted to gently follow up regarding your upcoming lease expiration on ${f.exp}, as we have not yet received your renewal decision. We would truly love the opportunity to have you continue as part of our community and are here to make the process as smooth as possible.\n\nTo ensure we are planning appropriately, your residence is scheduled to be placed back on the market on ${f.mktDate} if we do not hear from you before then. If you are considering a renewal — or if this message reached you in error — please don't hesitate to reach out.\n\nWe're happy to discuss options, answer any questions, or assist in any way. You can contact us directly at ${f.email} at your convenience.\n\nThank you again for being a valued resident. We look forward to connecting with you.\n\nSincerely,\n${f.prop} Management`},
+
+// ── MOVE-OUTS ─────────────────────────────────────────────────────────────────
+{id:18,cat:"Move-Outs",name:"Move-Out Coordination Instructions",kw:["move out","vacate","final walkthrough","keys","departure","moving"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Move-Out Coordination`,
+body:(f)=>`Dear Resident,\n\nIf you have not already done so, please contact the Management Office to coordinate your upcoming move-out, including reserving the service elevator and scheduling your final walk-through.\n\nThe service elevator is available seven days a week in 2-hour increments from 7am–9pm, on a first-come, first-served basis — please schedule as soon as possible.\n\nIf using a moving company, please provide a copy of their certificate of insurance per our requirements. If moving yourself, a self-move waiver is available at the Concierge desk.\n\nYour final walk-through must take place after all belongings are removed from the unit. Walk-throughs can be scheduled with Concierge seven days a week between 9am–5pm and take approximately 10 minutes.\n\nIf you have a temporary wall installed in your unit, please coordinate its removal with the front desk in advance, as these bookings also fill up quickly.\n\nPlease remember to cancel your ConEdison account and transfer utilities back to the Landlord.\n\nShould you have any questions, please contact us at ${f.email}.\n\nThank you,\n${f.prop} Management`},
+
+// ── LEGAL & NONPAYMENT ───────────────────────────────────────────────────────
+{id:19,cat:"Legal & Nonpayment",name:"Nonpayment Notice",kw:["nonpayment","late","past due","balance","legal","rent owed"],
+fields:[{id:"prop",l:"Property / entity name",ph:"Ocean Prime, Owner, LLC."},{id:"res",l:"Resident name",ph:"John Smith"},{id:"amt",l:"Amount past due",ph:"$2,500"},{id:"period",l:"Period of nonpayment",ph:"through January 31, 2025"},{id:"notices",l:"Prior notices sent",ph:"two email notices and one certified mail notice"},{id:"deadline",l:"Payment deadline",ph:"February 20, 2025"}],
+sub:(f)=>`Notice of Past Due Balance — ${f.res}`,
+body:(f)=>`Dear ${f.res},\n\nThis notice is to inform you that our records reflect a past due balance of ${f.amt} for rent and additional rent for the period through ${f.period}.\n\nAs of the date of this notice, your account is 15 or more days past due. We have made multiple attempts to reach you, including ${f.notices}.\n\nPlease remit payment in full prior to ${f.deadline} to avoid your account being referred to our legal team. As per your lease agreement, you will be responsible for any applicable legal fees incurred.\n\nThank you,\n${f.prop}`},
+
+{id:20,cat:"Legal & Nonpayment",name:"Rhino / Security Bond Draw Notice",kw:["rhino","security deposit","bond","draw","balance"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"period",l:"Month of outstanding balance",ph:"June"},{id:"drawDate",l:"Date Rhino draw will occur",ph:"Friday, June 20th"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Outstanding Balance & Rhino Notice`,
+body:(f)=>`Dear ${f.res},\n\nWe would like to remind you that an outstanding balance remains on your account for the month of ${f.period}.\n\nIf you are unable to make further payment, we will have no choice but to begin drawing down on your Rhino coverage bond as of ${f.drawDate}.\n\nIf you believe you have received this email in error or if payment is currently in transit, please contact us immediately at ${f.email} so we may reconcile your account.\n\nThank you,\n${f.prop} Management`},
+
+// ── COMMON AREAS ──────────────────────────────────────────────────────────────
+{id:21,cat:"Common Areas",name:"Common Area Renovation or Upgrade",kw:["common area","renovation","upgrade","hallway","lobby","carpet","flooring"],
+fields:[{id:"prop",l:"Property name",ph:"Chai"},{id:"area",l:"Area being upgraded",ph:"hallways"},{id:"work",l:"Type of work",ph:"carpet replacement"},{id:"date",l:"Start date",ph:"Wednesday, October 19th"},{id:"hours",l:"Work hours",ph:"9am–5pm"},{id:"end",l:"Estimated completion",ph:"Friday, October 21st"},{id:"email",l:"Management email",ph:"chaiadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — ${f.area} Upgrade`,
+body:(f)=>`Dear Residents,\n\nAs part of our continued efforts to enhance your experience at ${f.prop}, we will be completing ${f.work} in the ${f.area} beginning ${f.date}, during the hours of ${f.hours}. This work is anticipated to be completed by ${f.end}.\n\nOur team will be working thoughtfully and efficiently to minimize any disruption, and we truly appreciate your patience as we make these improvements for your comfort and enjoyment.\n\nIf you have any questions or need assistance during this time, please don't hesitate to reach out to us at ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:22,cat:"Common Areas",name:"Amenity Opening or Reopening",kw:["opening","reopening","terrace","pool","amenity","open"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"amenity",l:"Amenity name",ph:"10th floor outdoor terrace"},{id:"date",l:"Opening date",ph:"Friday, May 20th"},{id:"hours",l:"Operating hours",ph:"7:00am to 11:00pm"},{id:"phone",l:"Concierge phone",ph:"(212) 765-6272"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — ${f.amenity} Now Open`,
+body:(f)=>`Dear Residents,\n\nWe're pleased to share that the ${f.amenity} will be opening for your enjoyment beginning ${f.date}. The space will be available during the following hours: ${f.hours}.\n\nWe are confident this will enhance your experience at ${f.prop}. For your convenience, the amenity guidelines are attached, and we kindly ask that you read them carefully prior to using the space.\n\nShould you have any questions or need assistance, please contact our 24/7 Concierge at ${f.phone} or email ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:23,cat:"Common Areas",name:"Area Closure",kw:["closed","closure","unavailable","off limits"],
+fields:[{id:"prop",l:"Property name",ph:"PLG"},{id:"area",l:"Area being closed",ph:"cellar level"},{id:"reason",l:"Reason for closure",ph:"extreme weather conditions"},{id:"reopen",l:"Reopen timeline",ph:"until further notice — we will notify you upon reopening"},{id:"phone",l:"Concierge phone",ph:"(212) 825-1711"}],
+sub:(f)=>`${f.prop} — ${f.area} Temporarily Closed`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that, due to ${f.reason}, the ${f.area} will be temporarily closed ${f.reopen}.\n\nWe understand this space is an important part of your day-to-day experience, and we sincerely appreciate your patience as we work to resolve this as quickly as possible. Our team is focused on restoring access promptly and will continue to keep you informed.\n\nIf you need any assistance in the meantime, please contact our 24/7 Concierge at ${f.phone} — we're always here to help.\n\nSincerely,\n${f.prop} Management`},
+
+// ── POLICY REMINDERS ──────────────────────────────────────────────────────────
+{id:24,cat:"Policy Reminders",name:"Hallways Must Remain Clear",kw:["hallway","clear","fire code","fdny","obstruction","mats","bikes","strollers"],
+fields:[{id:"prop",l:"Property name",ph:"90W"},{id:"deadline",l:"Removal deadline",ph:"Friday, May 2nd at 12pm"}],
+sub:(f)=>`${f.prop} — Hallway Clearance Policy Reminder`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that, in accordance with your lease agreement, building standards, and FDNY fire code, all hallways must remain clear at all times.\n\nFor the safety of everyone in our community, no personal items may be placed in hallways, on door frames, or on walls. This includes, but is not limited to, mats, wreaths, shoes, bikes, strollers, cameras, and doorbells. Even small items can create serious obstructions in the event of an emergency.\n\nWe kindly ask that any such items be removed by ${f.deadline}. Items remaining after this time will be removed and discarded without further notice.\n\nThank you for your immediate attention to this important safety matter and for helping us maintain a safe and compliant environment for all residents.\n\nSincerely,\n${f.prop} Management`},
+
+{id:25,cat:"Policy Reminders",name:"No Smoking — Building-Wide Reminder",kw:["smoking","smoke","vaping","no smoking","policy","fine"],
+fields:[{id:"prop",l:"Property name",ph:"PLG"},{id:"fine",l:"Fine range per occurrence",ph:"$250–$1,000"},{id:"email",l:"Management email",ph:"plgadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Non-Smoking Policy Reminder`,
+body:(f)=>`Dear Residents,\n\nPlease be reminded that ${f.prop} is a non-smoking building. Smoking and vaping are strictly prohibited throughout the property, including inside apartments, on balconies, and in all common and outdoor areas.\n\nThis policy is in place to maintain a clean, comfortable, and safe environment for all residents. Smoking anywhere on the property is a violation of your lease and may result in a fine of ${f.fine} per occurrence.\n\nWe kindly ask that you ensure all household members and guests are aware of and adhere to this policy.\n\nIf you have any questions, please feel free to contact us at ${f.email}.\n\nThank you for your cooperation.\n\nSincerely,\n${f.prop} Management`},
+
+{id:26,cat:"Policy Reminders",name:"No Smoking — Specific Floor Violation",kw:["smoking","floor","violation","specific floor"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"floor",l:"Floor number",ph:"12th"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Non-Smoking Policy: Floor ${f.floor} Violation`,
+body:(f)=>`Dear ${f.prop} Residents on Floor ${f.floor},\n\nPlease be reminded that ${f.prop} is a smoke-free building. Smoking and vaping are strictly prohibited anywhere on the property, including within apartments, on balconies, and in all common and outdoor areas.\n\nWe have recently received reports of violations originating from this floor. Out of respect for your neighbors and to maintain a safe and comfortable environment, we ask for your immediate attention to this policy and full compliance moving forward.\n\nPlease also ensure that all household members and guests are aware of and adhere to these guidelines. Violations are subject to fines per occurrence in accordance with your lease.\n\nIf you have any questions, please contact us at ${f.email}.\n\nThank you for your cooperation.\n\nSincerely,\n${f.prop} Management`},
+
+{id:27,cat:"Policy Reminders",name:"Pet Rules — Building-Wide Reminder",kw:["pet","dog","cat","leash","rules","policy","animals"],
+fields:[{id:"prop",l:"Property name",ph:"Bezel"},{id:"restricted",l:"Areas where pets are not permitted",ph:"fitness room, rooftop terrace, and laundry rooms",big:true},{id:"entry",l:"Entry/exit instruction",ph:"Pets must enter and exit through the service entrance only."},{id:"email",l:"Management email",ph:"bezel@zrsmanagement.com"},{id:"phone",l:"Concierge phone",ph:"(212) 433-3111"}],
+sub:(f)=>`${f.prop} — Pet Rules and Policies Reminder`,
+body:(f)=>`Dear Residents,\n\nWhile ${f.prop} is proud to be a pet-friendly community, maintaining a clean and comfortable environment for all remains a shared responsibility. We kindly ask that all pet owners take a moment to carefully review the attached pet guidelines and ensure that anyone caring for your pet, including dog walkers or pet sitters, is familiar with them as well.\n\nPets are not permitted in the following areas: ${f.restricted}. ${f.entry}\n\nWe appreciate your attention to this matter and your continued consideration for the community.\n\nShould you have any questions or need assistance, please contact our 24/7 Concierge at ${f.phone} or email ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:28,cat:"Policy Reminders",name:"Noise Policy — Building-Wide Reminder",kw:["noise","quiet hours","loud","disturbance","policy","neighbors"],
+fields:[{id:"prop",l:"Property name",ph:"Ocean"},{id:"quiet",l:"Quiet hours (start – end)",ph:"10pm – 8am"},{id:"phone",l:"Concierge phone",ph:"(212) 784-7486"},{id:"email",l:"Management email",ph:"oceanadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Noise Policy Reminder`,
+body:(f)=>`Dear Residents,\n\nWith the comfort of our entire community in mind, we would like to remind everyone of ${f.prop}'s noise policies.\n\nThe following are not permitted:\n\n  • Any noise that disturbs neighbors during quiet hours (${f.quiet})\n  • Gatherings or parties that extend into hallways or common areas\n  • Unattended guests in hallways causing noise or disturbances\n  • Ongoing or excessive noise at any time\n\nThese activities are in violation of your lease agreement and may result in further action if not addressed.\n\nIf you experience a noise disturbance, please contact our 24/7 Concierge at ${f.phone} while the issue is occurring so it can be addressed promptly. If the concern continues, please follow up with Management at ${f.email}.\n\nWe appreciate your cooperation in helping maintain a respectful and comfortable environment for all residents.\n\nSincerely,\n${f.prop} Management`},
+
+{id:29,cat:"Policy Reminders",name:"Noise Complaint — 1st Notice to Unit",kw:["noise","complaint","1st notice","warning","unit"],
+fields:[{id:"prop",l:"Property name",ph:"Sky"},{id:"unit",l:"Unit number",ph:"12B"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"date",l:"Date / time of incident",ph:"Friday, April 25th at 11:30pm"},{id:"lease",l:"Lease clause reference",ph:"Section 9, Paragraph B of your lease"}],
+sub:(f)=>`${f.prop} Unit ${f.unit} — Noise Notice (1st Notice)`,
+body:(f)=>`Dear ${f.res},\n\nPlease be advised that we have received reports of excessive noise originating from your apartment on ${f.date}, which have been verified by building staff. This letter serves as your first written notice.\n\nWe understand that day-to-day living comes with some level of noise; however, the reported activity has been disruptive to neighboring residents and is not in alignment with community standards. Please refer to ${f.lease}, as this is considered a violation of your lease agreement.\n\nWe kindly ask for your immediate attention to this matter and that you take care to be mindful of your neighbors moving forward, particularly during quiet hours.\n\nShould you have any questions or wish to discuss this further, please feel free to contact us at the management office.\n\nThank you for your prompt cooperation.\n\nSincerely,\n${f.prop} Management`},
+
+{id:30,cat:"Policy Reminders",name:"Noise Complaint — 2nd Notice to Unit",kw:["noise","complaint","2nd notice","second warning","unit"],
+fields:[{id:"prop",l:"Property name",ph:"Sky"},{id:"unit",l:"Unit number",ph:"12B"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"date",l:"Date / time of incident",ph:"Saturday, April 26th at 12am"},{id:"lease",l:"Lease clause reference",ph:"Section 9, Paragraph B of your lease"}],
+sub:(f)=>`${f.prop} Unit ${f.unit} — Noise Notice (2nd Notice)`,
+body:(f)=>`Dear ${f.res},\n\nPlease be advised that we have received additional reports of excessive noise originating from your apartment on ${f.date}, which have been verified by building staff. This letter serves as your second written notice and requires your immediate attention.\n\nThis activity is in direct violation of your lease — please refer to ${f.lease}. Prior notice has already been provided, and it is important that this behavior does not continue.\n\nWe take the comfort and quality of life of all residents very seriously. Any further occurrences may result in additional action in accordance with your lease agreement.\n\nPlease ensure full compliance with building policies moving forward.\n\nShould you have any questions, please contact us at the management office.\n\nSincerely,\n${f.prop} Management`},
+
+{id:31,cat:"Policy Reminders",name:"Noise Complaint — 3rd / Final Notice to Unit",kw:["noise","complaint","3rd notice","final notice","legal action"],
+fields:[{id:"prop",l:"Property name",ph:"Sky"},{id:"unit",l:"Unit number",ph:"12B"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"date",l:"Date / time of most recent incident",ph:"Sunday, April 27th at 1am"},{id:"lease",l:"Lease clause reference",ph:"Section 9, Paragraph B of your lease"}],
+sub:(f)=>`${f.prop} Unit ${f.unit} — Noise Notice (Final Notice)`,
+body:(f)=>`Dear ${f.res},\n\nPlease be advised that we have continued to receive complaints of excessive noise originating from your apartment, most recently on ${f.date}, which have been verified by building staff. This letter serves as your third and final written notice.\n\nThis conduct is in direct violation of your lease — please refer to ${f.lease}. Despite prior notices, the issue has not been resolved.\n\nImmediate and consistent compliance is required. Any further occurrences will result in formal action, including legal proceedings, in accordance with your lease agreement.\n\nWe strongly encourage you to take all necessary steps to ensure this does not happen again.\n\nIf you wish to further discuss this matter, please contact us at the management office.\n\nSincerely,\n${f.prop} Management`},
+
+{id:32,cat:"Policy Reminders",name:"Window Safety — Items on Exterior",kw:["window","ledge","exterior","items","city code","plants","violation"],
+fields:[{id:"prop",l:"Property name",ph:"Ocean"},{id:"unit",l:"Unit number",ph:"14C"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"email",l:"Management email",ph:"oceanadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} Unit ${f.unit} — Window Safety Policy`,
+body:(f)=>`Dear ${f.res},\n\nPlease be advised that items have been observed placed on the exterior of your window, including on ledges and/or outdoor areas. This condition is not permitted.\n\nPlacing any items outside of windows — including furniture, plants, or decorations — is a violation of city code and your lease, and presents a safety risk.\n\nYou are required to remove all such items immediately. Any fines or penalties incurred as a result of this violation will be the sole responsibility of the resident.\n\nPlease treat this matter with urgency and confirm once the items have been removed.\n\nShould you have any questions, please contact us at ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:33,cat:"Policy Reminders",name:"Refuse and Recycling Guidelines",kw:["recycling","refuse","trash","garbage","cardboard","chute","disposal"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"recycling",l:"Recycling items accepted",ph:"paper, plastic bottles, aluminum cans, clean containers",big:true},{id:"cardboard",l:"Cardboard instructions",ph:"flatten and leave next to bins — staff will dispose properly"},{id:"large",l:"Large item disposal instructions",ph:"contact Concierge to coordinate bulk pickup"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"},{id:"phone",l:"Concierge phone",ph:"(212) 762-9622"}],
+sub:(f)=>`${f.prop} — Refuse and Recycling Guidelines`,
+body:(f)=>`Dear Residents,\n\nThis is a friendly reminder of the refuse and recycling guidelines at ${f.prop}. In consideration of our entire community, and to uphold the highest standards of safety, sanitation, and cleanliness, we kindly ask that you review and follow the below:\n\nTrash Chute (Household Trash)\n  • All household trash must be bagged and disposed of through the trash chute.\n  • No household trash may be left on the floor of the refuse room, hallways, or any common areas.\n  • Please tie bags tightly to avoid spills and odors.\n  • Do not place boxes, oversized bags, or loose/bulky items in the chute.\n\nRecycling\n  • Accepted items: ${f.recycling}. Please ensure all items are clean and emptied before disposing.\n  • All recyclable materials must be separated from household trash.\n  • Cardboard: ${f.cardboard}.\n  • Place recyclables in designated bins only — do not place in the chute.\n\nLarge Items\n  • ${f.large}. Please contact Concierge for proper coordination and disposal.\n\nPlease do not leave trash, boxes, or recyclables outside your door, in hallways, elevators, or common areas at any time. Non-compliance may result in fees in accordance with your lease.\n\nWe appreciate your cooperation in helping maintain a clean and well-kept community for all. Should you have any questions, please contact us at ${f.email} or our 24/7 Concierge at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:34,cat:"Policy Reminders",name:"Amenity Keyfob / Access Reminder",kw:["keyfob","key fob","access","door","amenity","lock"],
+fields:[{id:"prop",l:"Property name",ph:"Bezel"},{id:"email",l:"Management email",ph:"bezel@zrsmanagement.com"},{id:"phone",l:"Concierge phone",ph:"(212) 433-3111"}],
+sub:(f)=>`${f.prop} — Amenity Access: Keyfob Required`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that your key fob is required to access all amenity spaces. Kindly swipe your key fob prior to attempting to open any amenity door, as doors will not open without proper access.\n\nWe also ask that you do not apply force to any amenity doors. Forcing doors can damage the locking mechanisms and creates a safety concern for the community.\n\nIf you experience any issues with your key fob or have any questions, please contact us at ${f.email} or our 24/7 Concierge at ${f.phone} for immediate assistance.\n\nThank you for your cooperation.\n\nSincerely,\n${f.prop} Management`},
+
+// ── HOLIDAYS ──────────────────────────────────────────────────────────────────
+{id:35,cat:"Holidays",name:"Holiday Office Closure",kw:["holiday","closed","office","observance","thanksgiving","christmas","labor day","yom kippur","hours"],
+fields:[{id:"prop",l:"Property name",ph:"Sky"},{id:"holiday",l:"Holiday name",ph:"Thanksgiving"},{id:"close",l:"Closing date & time",ph:"Wednesday, November 26th at 2pm"},{id:"reopen",l:"Reopening date & time",ph:"Monday, December 1st at 9am"},{id:"extra",l:"Additional service closures (valet, shuttle, etc.)",ph:"Valet will also be closed during this time."},{id:"phone",l:"Concierge phone",ph:"(646) 678-5128"},{id:"greeting",l:"Holiday greeting",ph:"Wishing you and your loved ones a Happy Thanksgiving!"}],
+sub:(f)=>`${f.prop} — Office Closed: ${f.holiday}`,
+body:(f)=>`Dear Residents,\n\nIn observance of ${f.holiday}, the Management Office will be closed beginning ${f.close} and will reopen on ${f.reopen}. ${f.extra} All other building operations will continue as scheduled.\n\nFor immediate assistance, our 24/7 Concierge team is available at ${f.phone}. In the event of an emergency, please call 911.\n\n${f.greeting}\n\nSincerely,\n${f.prop} Management`},
+
+// ── WEATHER & EMERGENCY ───────────────────────────────────────────────────────
+{id:36,cat:"Weather & Emergency",name:"Severe Weather Advisory",kw:["weather","storm","hurricane","wind","rain","hail","advisory","snow"],
+fields:[{id:"prop",l:"Property name",ph:"Sky"},{id:"weather",l:"Type of weather / conditions",ph:"severe thunderstorms with wind gusts up to 60 MPH"},{id:"start",l:"Start date / time",ph:"tomorrow, Tuesday April 29th"},{id:"end",l:"End date / time",ph:"Wednesday, April 30th"},{id:"officeClose",l:"Office closing date & time",ph:"Tuesday, April 29th at 12pm"},{id:"officeOpen",l:"Office reopening date & time",ph:"Wednesday, April 30th at 9am"},{id:"svcNote",l:"Additional service updates (shuttle, valet, etc.)",ph:"Shuttle service will be suspended during the storm."},{id:"email",l:"Management email",ph:"skyadmin@columbuspropmgmt.com"},{id:"phone",l:"Concierge phone",ph:"(646) 678-5128"}],
+sub:(f)=>`${f.prop} — Severe Weather Advisory`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that the local area is expected to experience ${f.weather} beginning ${f.start} and continuing through ${f.end}.\n\nOut of an abundance of caution and for the safety of our community, we kindly ask that all windows remain fully closed during this time. If your apartment includes a balcony, please ensure doors are securely shut and bring any loose items indoors to prevent potential damage or safety hazards.\n\nThe Management Office will be closed for in-person visits beginning ${f.officeClose} and will reopen on ${f.officeOpen}. Our team will remain fully available and working remotely. You may reach us at ${f.email}, and we will respond promptly.\n\nFor immediate assistance, our 24/7 Concierge team is available at ${f.phone}.\n\nPlease also note:\n  • ${f.svcNote}\n\nWe will continue to monitor conditions closely and provide updates as needed. We appreciate your cooperation as we take these precautions to protect the safety of our community.\n\nSincerely,\n${f.prop} Management`},
+
+{id:37,cat:"Weather & Emergency",name:"Tragic Incident — Community Notice",kw:["incident","tragedy","tragic","emergency","investigation"],
+fields:[{id:"prop",l:"Property name",ph:"PLG"},{id:"desc",l:"Brief vague description of incident",ph:"a tragic incident took place at our building"}],
+sub:(f)=>`${f.prop} — Community Notice`,
+body:(f)=>`Dear Residents,\n\nWe regret to inform you that ${f.desc}. We are fully cooperating with the relevant authorities as they carry out their investigation.\n\nDuring this difficult time, we kindly ask all members of our community to respect the privacy of those affected. We extend our deepest condolences and ask for your understanding and support.\n\nSincerely,\n${f.prop} Management`},
+
+// ── UNIT-SPECIFIC ──────────────────────────────────────────────────────────────
+{id:38,cat:"Unit-Specific",name:"Emergency Service Shutoff — Unit Notice",kw:["unit","electricity","shutoff","power","service","individual unit"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"svc",l:"Service being shut off",ph:"electricity"},{id:"duration",l:"Estimated duration",ph:"approximately two hours"},{id:"start",l:"Start time",ph:"today at 10am"},{id:"access",l:"Unit access needed? (details)",ph:"We will not need access to your unit."},{id:"phone",l:"Concierge phone",ph:"(212) 217-9622"}],
+sub:(f)=>`${f.prop} — ${f.svc} Interruption Notice`,
+body:(f)=>`Dear ${f.res},\n\nDue to necessary maintenance work, ${f.svc} in your unit will be temporarily interrupted beginning ${f.start} for approximately ${f.duration}. ${f.access}\n\nWe will notify you as soon as service has been restored. We apologize for the inconvenience and appreciate your cooperation.\n\nFor immediate assistance, please contact Concierge at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:39,cat:"Unit-Specific",name:"Pet Disturbance — Individual Resident",kw:["pet","dog","disturbance","barking","animal","warning","individual"],
+fields:[{id:"prop",l:"Property name",ph:"Sky"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"date",l:"Date / time of disturbance",ph:"Friday, April 25th around 10pm"},{id:"email",l:"Management email",ph:"skyadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Pet Disturbance Notice`,
+body:(f)=>`Dear ${f.res},\n\nAs you are aware, ${f.prop} is a pet-friendly building. In accordance with the Pet Agreement, all pets must be properly controlled at all times and must not create disturbances for other residents.\n\nIt has been brought to our attention that your pet(s) caused a disturbance on ${f.date}. We understand that occasional noise can happen; however, it is important that this is addressed promptly to ensure the comfort of your neighbors.\n\nWe kindly ask that you take the necessary steps to prevent any recurrence. Continued violations may result in further action in accordance with your lease and pet agreement.\n\nWe appreciate your attention to this matter and your cooperation.\n\nShould you have any questions, please feel free to contact us at ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:40,cat:"Unit-Specific",name:"Market Payment Not Processed",kw:["market","payment","charge","unpaid","mini market"],
+fields:[{id:"prop",l:"Property name",ph:"Bezel"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"date",l:"Date of visit",ph:"Thursday, April 24th"},{id:"sender",l:"Sender name",ph:"Andrea Pardo"},{id:"email",l:"Management email",ph:"bezel@zrsmanagement.com"}],
+sub:(f)=>`${f.prop} — The Market: Payment Issue`,
+body:(f)=>`Dear ${f.res},\n\nWe are reaching out as it appears that payment was not fully processed during your recent visit to The Market on ${f.date}. We would appreciate it if you could please visit our office to remit payment at your earliest convenience.\n\nIf your credit card records show a charge for this transaction, please provide a copy so we may follow up with our financial institution accordingly.\n\nThank you for your cooperation. Should you have any questions, please contact us at ${f.email} or stop by the office during business hours.\n\nSincerely,\n${f.sender}\n${f.prop} Management`},
+
+// ── SUSTAINABILITY ────────────────────────────────────────────────────────────
+{id:41,cat:"Sustainability",name:"Sustainability / Resident Program",kw:["sustainability","green","environment","program","gridrewards","energy"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"prog",l:"Program name",ph:"GridRewards"},{id:"desc",l:"What the program does (2–3 sentences)",ph:"GridRewards gives residents the ability to earn cash back by reducing energy usage during peak demand times.",big:true},{id:"benefit",l:"Key benefit to residents",ph:"Earn cash back while helping reduce strain on the energy grid."},{id:"signup",l:"How to sign up",ph:"Download the GridRewards app at getgridrewards.com or see the attached instructions."}],
+sub:(f)=>`${f.prop} — ${f.prog}: Earn Rewards and Help the Environment`,
+body:(f)=>`Dear Residents,\n\nThe Moinian Group is committed to sustainable and efficient practices across our properties. We are excited to introduce the ${f.prog} program to ${f.prop} residents.\n\n${f.desc}\n\n${f.benefit}\n\nTo get started: ${f.signup}\n\nEvery action toward reducing energy makes a real impact. Thank you for being part of our community's commitment to a greener future.\n\nThank you,\n${f.prop} Management`},
+
+// ── BUILDING SYSTEMS ──────────────────────────────────────────────────────────
+{id:42,cat:"Building Systems",name:"Generator / Backup Power Test",kw:["generator","backup power","power test","emergency systems","scheduled"],
+fields:[{id:"prop",l:"Property name",ph:"90W"},{id:"date",l:"Date of test",ph:"Tuesday, May 6th"},{id:"start",l:"Start time",ph:"9am"},{id:"end",l:"End time",ph:"11am"},{id:"affected",l:"What may be affected during test",ph:"common area lighting and certain building systems may briefly flicker"},{id:"phone",l:"Concierge phone",ph:"(646) 678-5128"},{id:"email",l:"Management email",ph:"90wadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Scheduled Generator Test: ${f.date}`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that a scheduled generator and backup power test will be conducted on ${f.date} between the hours of ${f.start} and ${f.end}. This is a routine and required test to ensure our emergency systems are fully operational.\n\nDuring this time, ${f.affected}. Normal power will not be interrupted to your apartment.\n\nWe appreciate your patience and understanding. Should you have any questions, please contact Concierge at ${f.phone} or our management team at ${f.email}.\n\nThank you,\n${f.prop} Management`},
+
+{id:43,cat:"Building Systems",name:"AC / HVAC Seasonal Switchover",kw:["AC","air conditioning","heat","HVAC","switchover","seasonal","cooling","heating","summer","winter"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"from",l:"Switching from",ph:"heat"},{id:"to",l:"Switching to",ph:"air conditioning"},{id:"date",l:"Switchover date",ph:"Monday, May 12th"},{id:"expect",l:"What residents should expect",ph:"a brief period where neither heat nor AC will be available while the transition takes place",big:true},{id:"phone",l:"Concierge phone",ph:"(212) 765-6272"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Seasonal HVAC Switchover: ${f.date}`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that on ${f.date}, the building will be transitioning from ${f.from} to ${f.to} throughout the building.\n\nDuring this transition, please be aware that ${f.expect}.\n\nIf you experience any issues with your heating or cooling after the switchover, please submit a maintenance request through the Resident Portal or contact Concierge at ${f.phone} so our team can assist you promptly.\n\nWe appreciate your patience during this seasonal transition.\n\nSincerely,\n${f.prop} Management`},
+
+// ── SEASONAL ──────────────────────────────────────────────────────────────────
+{id:44,cat:"Seasonal",name:"Roof / Terrace Seasonal Closure",kw:["roof","terrace","seasonal","closed","winter","closure","reopen","outdoor"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"area",l:"Area being closed",ph:"rooftop terrace"},{id:"date",l:"Effective closing date",ph:"Sunday, November 30th"},{id:"reopen",l:"Estimated reopening",ph:"Spring 2026"},{id:"phone",l:"Concierge phone",ph:"(212) 765-6272"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — ${f.area} Seasonal Closure`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that the ${f.area} will be closing for the season effective ${f.date}. We anticipate reopening in ${f.reopen} and will notify you as soon as the space is ready for your enjoyment.\n\nWe thank you for your understanding and look forward to welcoming you back to the space.\n\nShould you have any questions, please contact us at ${f.email} or our 24/7 Concierge at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:45,cat:"Seasonal",name:"Holiday Package Volume Reminder",kw:["packages","holiday","deliveries","peak season","package room","locker","pickup"],
+fields:[{id:"prop",l:"Property name",ph:"Bezel"},{id:"storage",l:"Package storage location",ph:"the package room on the lobby level"},{id:"pickup",l:"Pickup deadline / storage limit policy",ph:"48 hours of delivery notification"},{id:"overflow",l:"Overflow instructions",ph:"Oversized packages will be held at the Concierge desk"},{id:"phone",l:"Concierge phone",ph:"(212) 433-3111"}],
+sub:(f)=>`${f.prop} — Holiday Package Delivery Reminder`,
+body:(f)=>`Dear Residents,\n\nWith the holiday season approaching, we anticipate a significant increase in package deliveries at ${f.prop}. To ensure a smooth experience for all residents, we ask that you please keep the following in mind:\n\n  • All packages will be stored in ${f.storage}. You will be notified upon delivery.\n  • To keep the space clear for all residents, we kindly ask that packages be picked up within ${f.pickup}.\n  • ${f.overflow}.\n\nWe appreciate your cooperation in helping us manage the increased volume efficiently. Should you have any questions or need assistance, please contact our 24/7 Concierge at ${f.phone}.\n\nWishing you and yours a wonderful holiday season!\n\nSincerely,\n${f.prop} Management`},
+
+// ── MAINTENANCE & ACCESS ──────────────────────────────────────────────────────
+{id:46,cat:"Maintenance & Access",name:"Annual / Routine Apartment Inspection",kw:["inspection","annual","routine","apartment","access","visit","maintenance check"],
+fields:[{id:"prop",l:"Property name",ph:"100 John"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"type",l:"Type of inspection",ph:"annual Local Law inspection"},{id:"date",l:"Date(s) of inspection",ph:"Monday, May 19th"},{id:"hours",l:"Access hours",ph:"9am–5pm"},{id:"phone",l:"Concierge phone",ph:"212-217-9622"},{id:"email",l:"Management email",ph:"100johnadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — ${f.type}: ${f.date}`,
+body:(f)=>`Dear ${f.res},\n\nPlease be advised that ${f.prop} will be conducting ${f.type} apartment inspections on ${f.date} between the hours of ${f.hours}.\n\nOur team will require brief access to your apartment during this time. You do not need to be present — however, if you have a specific access preference or would like to schedule a different time, please contact us at ${f.email} or Concierge at ${f.phone} and we will do our best to accommodate you.\n\nOur team will be respectful of your home and will work efficiently to minimize any disruption.\n\nThank you in advance for your cooperation.\n\nSincerely,\n${f.prop} Management`},
+
+{id:47,cat:"Maintenance & Access",name:"Fire Alarm / Sprinkler Testing",kw:["fire alarm","sprinkler","testing","scheduled","alarm","smoke detector","fdny"],
+fields:[{id:"prop",l:"Property name",ph:"PLG"},{id:"date",l:"Date of testing",ph:"Wednesday, May 7th"},{id:"start",l:"Start time",ph:"9am"},{id:"end",l:"End time",ph:"3pm"},{id:"areas",l:"Areas or floors being tested",ph:"all floors building-wide"},{id:"phone",l:"Concierge phone",ph:"(212) 825-1711"},{id:"email",l:"Management email",ph:"plgadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Scheduled Fire Alarm Testing: ${f.date}`,
+body:(f)=>`Dear Residents,\n\nPlease be advised that scheduled fire alarm and sprinkler system testing will be conducted on ${f.date} between the hours of ${f.start} and ${f.end} in ${f.areas}.\n\nDuring this time, you may hear alarm sounds throughout the building. This is not an emergency — please do not evacuate unless directed to do so by building staff or the Fire Department.\n\nThis testing is required by the FDNY and is essential to ensuring the safety of our entire community. We appreciate your patience and understanding.\n\nShould you have any questions, please contact Concierge at ${f.phone} or our management team at ${f.email}.\n\nThank you,\n${f.prop} Management`},
+
+{id:48,cat:"Maintenance & Access",name:"Building-Wide Pest Inspection",kw:["pest inspection","building-wide","rodent","roach","bug","inspection","access"],
+fields:[{id:"prop",l:"Property name",ph:"Ocean"},{id:"date",l:"Date(s) of inspection",ph:"Thursday, May 8th"},{id:"hours",l:"Access hours",ph:"9am–5pm"},{id:"what",l:"What inspectors will check",ph:"common areas, utility spaces, and all apartments"},{id:"present",l:"Whether residents need to be home",ph:"You do not need to be present — our team will use building access."},{id:"phone",l:"Concierge phone",ph:"(212) 784-7486"},{id:"email",l:"Management email",ph:"oceanadmin@columbuspropmgmt.com"}],
+sub:(f)=>`${f.prop} — Building-Wide Pest Inspection: ${f.date}`,
+body:(f)=>`Dear Residents,\n\nAs part of our ongoing commitment to maintaining the highest standards of cleanliness and comfort at ${f.prop}, we will be conducting a building-wide pest inspection on ${f.date} between the hours of ${f.hours}.\n\nInspectors will be checking ${f.what}. ${f.present}\n\nIf any issues are identified in your apartment, our team will follow up with you directly to coordinate next steps.\n\nWe appreciate your cooperation in helping us maintain a clean and pest-free environment for the entire community. Should you have any questions, please contact us at ${f.email} or our 24/7 Concierge at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+// ── MISCELLANEOUS ─────────────────────────────────────────────────────────────
+{id:49,cat:"Miscellaneous",name:"Exterminator Service Schedule",kw:["exterminator","pest","pest control","schedule","treatment"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"freq",l:"Frequency",ph:"weekly"},{id:"day",l:"Service day",ph:"Thursday"},{id:"hours",l:"Service hours",ph:"9am–12pm"},{id:"signup",l:"How to request service for unit",ph:"sign up at the Concierge desk"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"},{id:"phone",l:"Concierge phone",ph:"212-762-9622"}],
+sub:(f)=>`${f.prop} — Exterminator Services: ${f.day}s ${f.hours}`,
+body:(f)=>`Dear Residents,\n\nTo uphold the highest levels of cleanliness and comfort at ${f.prop}, exterminator services are now on a recurring ${f.freq} schedule. Services will be conducted every ${f.day} between the hours of ${f.hours}, treating requested units and all common areas.\n\nTo request service for your unit, please ${f.signup}.\n\nShould you have any questions, please contact us at ${f.email} or Concierge at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:50,cat:"Miscellaneous",name:"Blank / Custom Announcement",kw:["blank","custom","general","announcement","other"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"subject",l:"Email subject topic",ph:"Building Update"},{id:"body",l:"Full message body",ph:"Write your message here...",big:true}],
+sub:(f)=>`${f.prop} — ${f.subject}`,
+body:(f)=>`Dear Residents,\n\n${f.body}\n\nThank you,\n${f.prop} Management`},
+];
+
+const CATS=["All",...[...new Set(T.map(t=>t.cat))]];
+let selCat="All",sel=null;
+
+function init(){
+  document.getElementById('catsWrap').innerHTML=CATS.map(c=>`<button class="cat-pill${c===selCat?' active':''}" onclick="setCat('${c}')">${c}</button>`).join('');
+  filter();
+}
+
+function setCat(c){
+  selCat=c;
+  document.querySelectorAll('.cat-pill').forEach(el=>el.classList.toggle('active',el.textContent===c));
+  filter();
+}
+
+function filter(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  const res=T.filter(t=>(selCat==='All'||t.cat===selCat)&&(!q||t.name.toLowerCase().includes(q)||t.cat.toLowerCase().includes(q)||t.kw.some(k=>k.includes(q))));
+  document.getElementById('tmplCount').textContent=`${res.length} template${res.length!==1?'s':''} found`;
+  const list=document.getElementById('tmplList');
+  if(!res.length){list.innerHTML='<div class="tmpl-empty">No templates match. Try a different keyword.</div>';return;}
+  list.innerHTML=res.map(t=>`<div class="tmpl-item${sel&&sel.id===t.id?' active':''}" onclick="pick(${t.id})"><div class="tmpl-item-cat">${t.cat}</div><div class="tmpl-item-name">${t.name}</div></div>`).join('');
+}
+
+function pick(id){
+  sel=T.find(t=>t.id===id);filter();
+  document.getElementById('placeholder').style.display='none';
+  document.getElementById('formArea').style.display='block';
+  document.getElementById('formCat').textContent=sel.cat;
+  document.getElementById('formTitle').textContent=sel.name;
+  document.getElementById('outputWrap').style.display='none';
+  const g=document.getElementById('fieldsGrid');
+  g.className='fields-grid'+(sel.fields.length>4?'':' single');
+  g.innerHTML=sel.fields.map(f=>`<div class="field${f.big?' full':''}"><label>${f.l}</label>${f.big?`<textarea id="f_${f.id}" placeholder="${f.ph||''}"></textarea>`:`<input type="text" id="f_${f.id}" placeholder="${f.ph||''}">`}</div>`).join('');
+  document.getElementById('rightPanel').scrollTop=0;
+}
+
+function vals(){
+  const v={};
+  sel.fields.forEach(f=>{const el=document.getElementById('f_'+f.id);v[f.id]=el?(el.value.trim()||el.placeholder):'';});
+  return v;
+}
+
+function generate(){
+  if(!sel)return;
+  const v=vals();
+  document.getElementById('outSubject').value=sel.sub(v);
+  document.getElementById('outBody').value=sel.body(v);
+  document.getElementById('outputWrap').style.display='block';
+  const ta=document.getElementById('outBody');
+  ta.style.height='auto';
+  ta.style.height=(ta.scrollHeight+20)+'px';
+  document.getElementById('outputWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function clearForm(){
+  if(!sel)return;
+  sel.fields.forEach(f=>{const el=document.getElementById('f_'+f.id);if(el)el.value='';});
+  document.getElementById('outputWrap').style.display='none';
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function copySubject(){
+  navigator.clipboard.writeText(document.getElementById('outSubject').value);
+  showToast('Subject copied!');
+  const b=document.getElementById('copySubBtn');b.textContent='Copied!';b.classList.add('copied');
+  setTimeout(()=>{b.textContent='Copy subject';b.classList.remove('copied');},2000);
+}
+
+function copyAll(){
+  const s=document.getElementById('outSubject').value;
+  const b=document.getElementById('outBody').value;
+  navigator.clipboard.writeText('Subject: '+s+'\n\n'+b);
+  showToast('Full email copied!');
+  const btn=document.getElementById('copyAllBtn');btn.textContent='Copied!';btn.classList.add('copied');
+  setTimeout(()=>{btn.textContent='Copy full email';btn.classList.remove('copied');},2000);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const ta=document.getElementById('outBody');
+  if(ta){ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=(ta.scrollHeight+4)+'px';});}
+});
+
+init();
+</script>
+</body>
+</html>
