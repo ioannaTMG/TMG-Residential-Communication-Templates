@@ -94,7 +94,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="hdr-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
     <div><div class="hdr-title">Resident Communication Generator</div><div class="hdr-sub">Moinian Group · Property Management</div></div>
   </div>
-  <div class="hdr-badge">47 Templates</div>
+  <div class="hdr-badge">48 Templates</div>
 </div>
 <div class="layout">
   <div class="left">
@@ -404,6 +404,24 @@ body:(f)=>`Dear Residents,\n\nAs part of our ongoing commitment to maintaining t
 fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"freq",l:"Frequency",ph:"weekly"},{id:"day",l:"Service day",ph:"Thursday"},{id:"hours",l:"Service hours",ph:"9am–12pm"},{id:"signup",l:"How to request service for unit",ph:"sign up at the Concierge desk"},{id:"email",l:"Management email",ph:"marcadmin@columbuspropmgmt.com"},{id:"phone",l:"Concierge phone",ph:"212-762-9622"}],
 sub:(f)=>`${f.prop} — Exterminator Services: ${f.day}s ${f.hours}`,
 body:(f)=>`Dear Residents,\n\nTo uphold the highest levels of cleanliness and comfort at ${f.prop}, exterminator services are now on a recurring ${f.freq} schedule. Services will be conducted every ${f.day} between the hours of ${f.hours}, treating requested units and all common areas.\n\nTo request service for your unit, please ${f.signup}.\n\nShould you have any questions, please contact us at ${f.email} or Concierge at ${f.phone}.\n\nSincerely,\n${f.prop} Management`},
+
+{id:51,cat:"Miscellaneous",name:"Acknowledgement — Delayed Response",kw:["acknowledgement","delayed","response","pending","follow up","receipt"],
+fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"res",l:"Resident name",ph:"John Smith"},{id:"timeline",l:"Expected response timeline",ph:"early next week"},{id:"sender",l:"Sender name",ph:"Ioanna Zacharopoulou"},{id:"sender_title",l:"Sender title",ph:"Head of Resident Experience"}],
+sub:(f)=>`${f.prop} — We Received Your Message`,
+body:(f)=>`Dear ${f.res},
+
+Thank you for your message, and my apologies for the delay in responding. I was hoping to have a more complete response sooner, but I am still gathering the necessary information to provide you with a thorough update.
+
+I wanted to acknowledge receipt of your email and ensure you heard from me. While I am not yet in a position to provide a full answer, please know this matter is receiving my full attention.
+
+You can expect to hear from me ${f.timeline}.
+
+I appreciate your patience in the meantime.
+
+Warm regards,
+${f.sender}
+${f.sender_title}
+${f.prop} Management`},
 
 {id:50,cat:"Miscellaneous",name:"Blank / Custom Announcement",kw:["blank","custom","general","announcement","other"],
 fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"subject",l:"Email subject topic",ph:"Building Update"},{id:"body",l:"Full message body",ph:"Write your message here...",big:true}],
