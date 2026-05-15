@@ -94,7 +94,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
     <div class="hdr-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
     <div><div class="hdr-title">Resident Communication Generator</div><div class="hdr-sub">Moinian Group · Property Management</div></div>
   </div>
-  <div class="hdr-badge">48 Templates</div>
+  <div class="hdr-badge">49 Templates</div>
 </div>
 <div class="layout">
   <div class="left">
@@ -261,6 +261,21 @@ fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"amenity",l:"Amenity nam
 sub:(f)=>`${f.prop} — ${f.amenity} Now Open`,
 body:(f)=>`Dear Residents,\n\nWe're pleased to share that the ${f.amenity} will be opening for your enjoyment beginning ${f.date}. The space will be available during the following hours: ${f.hours}.\n\nWe are confident this will enhance your experience at ${f.prop}. For your convenience, the amenity guidelines are attached, and we kindly ask that you read them carefully prior to using the space.\n\nShould you have any questions or need assistance, please contact our 24/7 Concierge at ${f.phone} or email ${f.email}.\n\nSincerely,\n${f.prop} Management`},
 
+
+{id:50,cat:"Common Areas",name:"Fitness Center Opening",kw:["fitness center","gym","opening","amenity","wellness","equipment","7 platt"],
+fields:[
+{id:"prop",l:"Property name",ph:"7 Platt"},
+{id:"date",l:"Target opening date",ph:"Monday, May 18, 2026"},
+{id:"location",l:"Amenity location",ph:"cellar level"},
+{id:"access",l:"Access instructions",ph:"through the service elevator and requires resident fob access for entry"},
+{id:"hours",l:"Hours update",ph:"official hours of operation are still being finalized and will be communicated separately prior to opening"},
+{id:"phone",l:"Concierge phone",ph:"[Concierge Phone]"},
+{id:"email",l:"Management email",ph:"[Management Email]"}
+],
+sub:(f)=>`${f.prop} — Fitness Center Opening`,
+body:(f)=>`Dear Residents,\n\nWe are excited to share the opening of the Fitness Center at ${f.prop}, currently scheduled to open on ${f.date}.\n\nDesigned to deliver a modern fitness experience, the space features state-of-the-art fitness equipment in a thoughtfully designed setting for residents to enjoy.\n\nThe Fitness Center is located on the ${f.location}. Access to the Fitness Center is ${f.access}. At this time, the ${f.hours}.\n\nAdditional amenity updates and building announcements will continue to be shared in the coming weeks as we move through the final phases of the building’s completion. We sincerely appreciate your continued patience and cooperation and look forward to welcoming more exciting additions to ${f.prop}.\n\nShould you have any questions, need additional information, or any type of assistance, please contact our 24/7 Concierge at ${f.phone} or our Management Office at ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+
 {id:23,cat:"Common Areas",name:"Area Closure",kw:["closed","closure","unavailable","off limits"],
 fields:[{id:"prop",l:"Property name",ph:"PLG"},{id:"area",l:"Area being closed",ph:"cellar level"},{id:"reason",l:"Reason for closure",ph:"extreme weather conditions"},{id:"reopen",l:"Reopen timeline",ph:"until further notice — we will notify you upon reopening"},{id:"phone",l:"Concierge phone",ph:"(212) 825-1711"}],
 sub:(f)=>`${f.prop} — ${f.area} Temporarily Closed`,
@@ -360,21 +375,6 @@ body:(f)=>`Dear ${f.res},\n\nWe are reaching out as it appears that payment was 
 fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"prog",l:"Program name",ph:"GridRewards"},{id:"desc",l:"What the program does (2–3 sentences)",ph:"GridRewards gives residents the ability to earn cash back by reducing energy usage during peak demand times.",big:true},{id:"benefit",l:"Key benefit to residents",ph:"Earn cash back while helping reduce strain on the energy grid."},{id:"signup",l:"How to sign up",ph:"Download the GridRewards app at getgridrewards.com or see the attached instructions."}],
 sub:(f)=>`${f.prop} — ${f.prog}: Earn Rewards and Help the Environment`,
 body:(f)=>`Dear Residents,\n\nThe Moinian Group is committed to sustainable and efficient practices across our properties. We are excited to introduce the ${f.prog} program to ${f.prop} residents.\n\n${f.desc}\n\n${f.benefit}\n\nTo get started: ${f.signup}\n\nEvery action toward reducing energy makes a real impact. Thank you for being part of our community's commitment to a greener future.\n\nThank you,\n${f.prop} Management`},
-
-
-{id:999,cat:"Common Areas",name:"Fitness Center Opening",kw:["fitness center","gym","opening","amenity","wellness","fitness","new amenity"],
-fields:[
-{id:"prop",l:"Property name",ph:"7 Platt"},
-{id:"date",l:"Target opening date",ph:"Monday, May 18, 2026"},
-{id:"location",l:"Amenity location",ph:"cellar level"},
-{id:"access",l:"Access instructions",ph:"through the service elevator and requires resident fob access for entry"},
-{id:"hours",l:"Hours update",ph:"official hours of operation are still being finalized and will be communicated separately prior to opening"},
-{id:"phone",l:"Concierge phone",ph:"(212) 217-9622"},
-{id:"email",l:"Management email",ph:"7plattadmin@columbuspropmgmt.com"}
-],
-sub:(f)=>`${f.prop} — Fitness Center Opening`,
-body:(f)=>`Dear Residents,\n\nWe are excited to share the opening of the Fitness Center at ${f.prop}, currently scheduled to open on ${f.date}.\n\nDesigned to deliver a modern fitness experience, the space features state-of-the-art fitness equipment in a thoughtfully designed setting for residents to enjoy.\n\nThe Fitness Center is located on the ${f.location}. Access to the Fitness Center is ${f.access}. At this time, the ${f.hours}.\n\nAdditional amenity updates and building announcements will continue to be shared in the coming weeks as we move through the final phases of the building’s completion. We sincerely appreciate your continued patience and cooperation and look forward to welcoming more exciting additions to ${f.prop}.\n\nShould you have any questions, need additional information, or any type of assistance, please contact our 24/7 Concierge at ${f.phone} or our Management Office at ${f.email}.\n\nSincerely,\n${f.prop} Management`},
-
 
 // ── BUILDING SYSTEMS ──────────────────────────────────────────────────────────
 {id:42,cat:"Building Systems",name:"Generator / Backup Power Test",kw:["generator","backup power","power test","emergency systems","scheduled"],
