@@ -361,6 +361,21 @@ fields:[{id:"prop",l:"Property name",ph:"The Marc"},{id:"prog",l:"Program name",
 sub:(f)=>`${f.prop} — ${f.prog}: Earn Rewards and Help the Environment`,
 body:(f)=>`Dear Residents,\n\nThe Moinian Group is committed to sustainable and efficient practices across our properties. We are excited to introduce the ${f.prog} program to ${f.prop} residents.\n\n${f.desc}\n\n${f.benefit}\n\nTo get started: ${f.signup}\n\nEvery action toward reducing energy makes a real impact. Thank you for being part of our community's commitment to a greener future.\n\nThank you,\n${f.prop} Management`},
 
+
+{id:999,cat:"Common Areas",name:"Fitness Center Opening",kw:["fitness center","gym","opening","amenity","wellness","fitness","new amenity"],
+fields:[
+{id:"prop",l:"Property name",ph:"7 Platt"},
+{id:"date",l:"Target opening date",ph:"Monday, May 18, 2026"},
+{id:"location",l:"Amenity location",ph:"cellar level"},
+{id:"access",l:"Access instructions",ph:"through the service elevator and requires resident fob access for entry"},
+{id:"hours",l:"Hours update",ph:"official hours of operation are still being finalized and will be communicated separately prior to opening"},
+{id:"phone",l:"Concierge phone",ph:"(212) 217-9622"},
+{id:"email",l:"Management email",ph:"7plattadmin@columbuspropmgmt.com"}
+],
+sub:(f)=>`${f.prop} — Fitness Center Opening`,
+body:(f)=>`Dear Residents,\n\nWe are excited to share the opening of the Fitness Center at ${f.prop}, currently scheduled to open on ${f.date}.\n\nDesigned to deliver a modern fitness experience, the space features state-of-the-art fitness equipment in a thoughtfully designed setting for residents to enjoy.\n\nThe Fitness Center is located on the ${f.location}. Access to the Fitness Center is ${f.access}. At this time, the ${f.hours}.\n\nAdditional amenity updates and building announcements will continue to be shared in the coming weeks as we move through the final phases of the building’s completion. We sincerely appreciate your continued patience and cooperation and look forward to welcoming more exciting additions to ${f.prop}.\n\nShould you have any questions, need additional information, or any type of assistance, please contact our 24/7 Concierge at ${f.phone} or our Management Office at ${f.email}.\n\nSincerely,\n${f.prop} Management`},
+
+
 // ── BUILDING SYSTEMS ──────────────────────────────────────────────────────────
 {id:42,cat:"Building Systems",name:"Generator / Backup Power Test",kw:["generator","backup power","power test","emergency systems","scheduled"],
 fields:[{id:"prop",l:"Property name",ph:"90W"},{id:"date",l:"Date of test",ph:"Tuesday, May 6th"},{id:"start",l:"Start time",ph:"9am"},{id:"end",l:"End time",ph:"11am"},{id:"affected",l:"What may be affected during test",ph:"common area lighting and certain building systems may briefly flicker"},{id:"phone",l:"Concierge phone",ph:"(646) 678-5128"},{id:"email",l:"Management email",ph:"90wadmin@columbuspropmgmt.com"}],
